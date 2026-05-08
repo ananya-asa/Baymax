@@ -19,6 +19,7 @@
     "@tensorflow/tfjs-react-native": "^1.0.0",
     "expo": "~50.0.0",
     "expo-asset": "~9.0.2",
+    "expo-av": "~13.10.6",
     "expo-gl": "~13.6.0",
     "expo-gl-cpp": "^11.4.0",
     "expo-sqlite": "~13.4.0",
