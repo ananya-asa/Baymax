@@ -15,6 +15,7 @@ import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Asset } from 'expo-asset';
 import { COLORS } from '../theme/colors';
 
+// Internal component for the 3D Human Model
 function HealthModel({ 
     heartRate, setHeartRate, spo2, setSpo2, temp, setTemp, bp, setBp, 
     smoke, setSmoke, roomTemp, setRoomTemp, humidity, setHumidity 
@@ -106,7 +107,7 @@ function HealthModel({
           </Html>
         </mesh>
   
-        {/* Environmental Sensors - Humidity (Restored) */}
+        {/* Environmental Sensors - Humidity */}
         <mesh position={[-3.5, 0.5, 0]} onPointerOver={() => setHoveredId('humidity')} onPointerOut={() => setHoveredId(null)}>
           <Html distanceFactor={8} pointerEvents="auto">
             <View style={getDynamicStyle('humidity', styles.envCard)}>
@@ -117,7 +118,7 @@ function HealthModel({
           </Html>
         </mesh>
   
-        {/* Environmental Sensors - Room Temp (Restored) */}
+        {/* Environmental Sensors - Room Temp */}
         <mesh position={[-3.5, -0.5, 0]} onPointerOver={() => setHoveredId('room')} onPointerOut={() => setHoveredId(null)}>
           <Html distanceFactor={8} pointerEvents="auto">
             <View style={getDynamicStyle('room', styles.envCard)}>
@@ -143,13 +144,27 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      {/* HEADER SECTION */}
       <View style={styles.header}>
         <Text style={styles.title}>HEALTH CONSOLE</Text>
-        <TouchableOpacity style={styles.historyButton} onPress={() => navigation.navigate('History')}>
-          <Ionicons name="time-outline" size={24} color={COLORS.primary} />
-        </TouchableOpacity>
+
+        <View style={styles.headerIcons}>
+          <TouchableOpacity
+            style={styles.iconBtn}
+            onPress={() => navigation.navigate('History')}
+          >
+            <Ionicons name="time-outline" size={22} color={COLORS.primary} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.iconBtn}
+            onPress={() => navigation.navigate('Profile')}
+          >
+            <Ionicons name="person-outline" size={22} color={COLORS.primary} />
+          </TouchableOpacity>
+        </View>
       </View>
 
+      {/* 3D INTERACTIVE CANVAS */}
       <View style={styles.canvasContainer}>
         <Canvas camera={{ position: [0, 0, 7], fov: 45 }}>
           <Suspense fallback={<Html center><ActivityIndicator color={COLORS.primary} /></Html>}>
@@ -169,11 +184,12 @@ export default function HomeScreen() {
         </Canvas>
       </View>
 
+      {/* GENERATE REPORT FOOTER */}
       <View style={styles.footer}>
         <TouchableOpacity
           style={styles.primaryButton}
           onPress={() =>
-            navigation.navigate('Result', { // Navigation target fixed
+            navigation.navigate('Result', {
               vitals: {
                 heartRate: heartRate || '72',
                 spo2: spo2 || '98',
@@ -189,110 +205,154 @@ export default function HomeScreen() {
           <Text style={styles.buttonText}>Generate Report</Text>
         </TouchableOpacity>
       </View>
+
+      {/* CHATBOT FAB (Bottom Right) */}
+      <TouchableOpacity 
+        style={styles.fabButton}
+        onPress={() => navigation.navigate('Chat')}
+        activeOpacity={0.8}
+      >
+        <MaterialCommunityIcons name="robot" size={28} color="#FFF" />
+        <View style={styles.onlineBadge} />
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-    container: { 
-      flex: 1, 
-      backgroundColor: '#FFFFFF' 
-    },
-    header: { 
-      padding: 24, 
-      flexDirection: 'row', 
-      justifyContent: 'space-between', 
-      alignItems: 'center' 
-    },
-    title: { 
-      fontSize: 26, 
-      fontWeight: '800', 
-      color: COLORS.text 
-    },
-    historyButton: { 
-      width: 50, 
-      height: 50, 
-      borderRadius: 15, 
-      backgroundColor: COLORS.primarySoft, 
-      justifyContent: 'center', 
-      alignItems: 'center' 
-    },
-    canvasContainer: { 
-      flex: 1, 
-      minHeight: Platform.OS === 'web' ? 600 : undefined 
-    },
-    footer: { 
-      padding: 24, 
-      position: 'absolute', 
-      bottom: 0, 
-      width: '100%' 
-    },
-    primaryButton: { 
-      backgroundColor: COLORS.primary, 
-      padding: 20, 
-      borderRadius: 20, 
-      alignItems: 'center' 
-    },
-    buttonText: { 
-      color: '#FFF', 
-      fontSize: 18, 
-      fontWeight: '800' 
-    },
-    calloutWrapper: { 
-      flexDirection: 'row', 
-      alignItems: 'center', 
-      width: 220 
-    },
-    line: { 
-      width: 50, 
-      height: 2, 
-      backgroundColor: '#FF0000' 
-    },
-    floatingInputCard: { 
-      backgroundColor: '#FFF', 
-      padding: 12, 
-      borderRadius: 16, 
-      borderWidth: 1, 
-      borderColor: COLORS.border, 
-      width: 120 
-    },
-    floatingLabel: { 
-      fontSize: 9, 
-      fontWeight: '800', 
-      color: COLORS.subtext, 
-      marginBottom: 4 
-    },
-    floatingInput: { 
-      fontSize: 18, 
-      fontWeight: '800', 
-      color: COLORS.text, 
-      padding: 0 
-    },
-    envCard: { 
-      backgroundColor: '#FFF', 
-      padding: 16, 
-      borderRadius: 20, 
-      borderWidth: 1, 
-      borderColor: COLORS.border, 
-      width: 130, 
-      alignItems: 'center',
-      shadowColor: '#000',
-      shadowOpacity: 0.05,
-      shadowRadius: 10,
-      elevation: 2,
-    },
-    envLabel: { 
-      fontSize: 10, 
-      fontWeight: '800', 
-      color: COLORS.subtext, 
-      marginTop: 8, 
-      marginBottom: 4 
-    },
-    envInput: { 
-      fontSize: 20, 
-      fontWeight: '800', 
-      color: COLORS.text, 
-      textAlign: 'center', 
-      width: '100%' 
-    }
-  });
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  header: {
+    padding: 24,
+    paddingTop: 56,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: '800',
+    color: COLORS.text,
+  },
+  headerIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  iconBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 13,
+    backgroundColor: COLORS.primarySoft,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  canvasContainer: {
+    flex: 1,
+    minHeight: Platform.OS === 'web' ? 600 : undefined,
+  },
+  footer: {
+    padding: 24,
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+  },
+  primaryButton: {
+    backgroundColor: COLORS.primary,
+    padding: 20,
+    borderRadius: 20,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: '800',
+  },
+  // Floating Chat Button Styles
+  fabButton: {
+    position: 'absolute',
+    bottom: 105, // Positioned above the primary button
+    right: 24,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: COLORS.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+  },
+  onlineBadge: {
+    position: 'absolute',
+    top: 2,
+    right: 4,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: '#4CAF50',
+    borderWidth: 2,
+    borderColor: '#FFF',
+  },
+  calloutWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: 220,
+  },
+  line: {
+    width: 50,
+    height: 2,
+    backgroundColor: '#FF0000',
+  },
+  floatingInputCard: {
+    backgroundColor: '#FFF',
+    padding: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    width: 120,
+  },
+  floatingLabel: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: COLORS.subtext,
+    marginBottom: 4,
+  },
+  floatingInput: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: COLORS.text,
+    padding: 0,
+  },
+  envCard: {
+    backgroundColor: '#FFF',
+    padding: 16,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    width: 130,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 2,
+  },
+  envLabel: {
+    fontSize: 10,
+    fontWeight: '800',
+    color: COLORS.subtext,
+    marginTop: 8,
+    marginBottom: 4,
+  },
+  envInput: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: COLORS.text,
+    textAlign: 'center',
+    width: '100%',
+  },
+});

@@ -6,12 +6,12 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+// Added useNavigation to the imports
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { getAllScans } from '../database/db';
 import { COLORS } from '../theme/colors';
 
-// Red color used for professional medical alerts/branding
 const MEDICAL_RED = '#D32F2F';
 
 type ScanItem = {
@@ -27,6 +27,7 @@ type ScanItem = {
 
 export default function HistoryScreen() {
   const [history, setHistory] = useState<ScanItem[]>([]);
+  const navigation = useNavigation(); // Initialize navigation
 
   useFocusEffect(
     useCallback(() => {
@@ -41,85 +42,112 @@ export default function HistoryScreen() {
   );
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* PROFESSIONAL HEADER */}
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.headerLabel}>SECURE DATA NODE</Text>
-          <Text style={styles.headerTitle}>Patient History</Text>
-        </View>
-        <MaterialCommunityIcons name="database-check" size={30} color={MEDICAL_RED} />
-      </View>
+    <View style={{ flex: 1 }}>
+      {/* NEW: TOP RIGHT BACK BUTTON */}
+      <TouchableOpacity 
+        style={styles.backButton} 
+        onPress={() => navigation.goBack()}
+      >
+        <Ionicons name="arrow-back" size={24} color={MEDICAL_RED} />
+      </TouchableOpacity>
 
-      {history.length === 0 ? (
-        <View style={styles.emptyCard}>
-          <Ionicons name="file-tray-outline" size={48} color="#BDBDBD" />
-          <Text style={styles.emptyTitle}>Log Archive Empty</Text>
-          <Text style={styles.emptyText}>
-            System is ready. No locally cached diagnostic reports were found on this node.
-          </Text>
-        </View>
-      ) : (
-        history.map((item) => (
-          <View key={item.id} style={styles.historyCard}>
-            {/* TOP BAR: Status & Timestamp */}
-            <View style={styles.cardHeader}>
-              <View style={styles.statusGroup}>
-                <View style={styles.redDot} />
-                <Text style={styles.statusTitle}>REPORT #{item.id}</Text>
-              </View>
-              <Text style={styles.dateText}>
-                {new Date(item.createdAt).toLocaleDateString()} | {new Date(item.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-              </Text>
-            </View>
-
-            {/* DATA GRID: High Contrast Vitals */}
-            <View style={styles.vitalsGrid}>
-              <View style={styles.vitalBox}>
-                <Text style={styles.vitalLabel}>HR</Text>
-                <Text style={styles.vitalValue}>{item.heartRate}<Text style={styles.vitalUnit}>BPM</Text></Text>
-              </View>
-              <View style={styles.vitalBox}>
-                <Text style={styles.vitalLabel}>SpO2</Text>
-                <Text style={styles.vitalValue}>{item.spo2}<Text style={styles.vitalUnit}>%</Text></Text>
-              </View>
-              <View style={styles.vitalBox}>
-                <Text style={styles.vitalLabel}>TEMP</Text>
-                <Text style={styles.vitalValue}>{item.temperature}<Text style={styles.vitalUnit}>°C</Text></Text>
-              </View>
-              <View style={[styles.vitalBox, { borderRightWidth: 0 }]}>
-                <Text style={styles.vitalLabel}>BP</Text>
-                <Text style={styles.vitalValue}>{item.bloodPressure}</Text>
-              </View>
-            </View>
-
-            {/* AI SUMMARY: Clean Box */}
-            <View style={styles.summaryBox}>
-              <Text style={styles.summaryLabel}>EDGE-AI INTERPRETATION</Text>
-              <Text style={styles.summaryText} numberOfLines={3}>
-                {item.aiSummary}
-              </Text>
-            </View>
-
-            {/* ACTION FOOTER */}
-            <TouchableOpacity style={styles.viewButton}>
-              <Text style={styles.viewButtonText}>ENCRYPTED LOG DETAILS</Text>
-              <Ionicons name="chevron-forward" size={16} color={MEDICAL_RED} />
-            </TouchableOpacity>
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        {/* PROFESSIONAL HEADER */}
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.headerLabel}>SECURE DATA NODE</Text>
+            <Text style={styles.headerTitle}>Patient History</Text>
           </View>
-        ))
-      )}
-    </ScrollView>
+          <MaterialCommunityIcons name="database-check" size={30} color={MEDICAL_RED} />
+        </View>
+
+        {history.length === 0 ? (
+          <View style={styles.emptyCard}>
+            <Ionicons name="file-tray-outline" size={48} color="#BDBDBD" />
+            <Text style={styles.emptyTitle}>Log Archive Empty</Text>
+            <Text style={styles.emptyText}>
+              System is ready. No locally cached diagnostic reports were found on this node.
+            </Text>
+          </View>
+        ) : (
+          history.map((item) => (
+            <View key={item.id} style={styles.historyCard}>
+              {/* TOP BAR: Status & Timestamp */}
+              <View style={styles.cardHeader}>
+                <View style={styles.statusGroup}>
+                  <View style={styles.redDot} />
+                  <Text style={styles.statusTitle}>REPORT #{item.id}</Text>
+                </View>
+                <Text style={styles.dateText}>
+                  {new Date(item.createdAt).toLocaleDateString()} | {new Date(item.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                </Text>
+              </View>
+
+              {/* DATA GRID */}
+              <View style={styles.vitalsGrid}>
+                <View style={styles.vitalBox}>
+                  <Text style={styles.vitalLabel}>HR</Text>
+                  <Text style={styles.vitalValue}>{item.heartRate}<Text style={styles.vitalUnit}>BPM</Text></Text>
+                </View>
+                <View style={styles.vitalBox}>
+                  <Text style={styles.vitalLabel}>SpO2</Text>
+                  <Text style={styles.vitalValue}>{item.spo2}<Text style={styles.vitalUnit}>%</Text></Text>
+                </View>
+                <View style={styles.vitalBox}>
+                  <Text style={styles.vitalLabel}>TEMP</Text>
+                  <Text style={styles.vitalValue}>{item.temperature}<Text style={styles.vitalUnit}>°C</Text></Text>
+                </View>
+                <View style={[styles.vitalBox, { borderRightWidth: 0 }]}>
+                  <Text style={styles.vitalLabel}>BP</Text>
+                  <Text style={styles.vitalValue}>{item.bloodPressure}</Text>
+                </View>
+              </View>
+
+              <View style={styles.summaryBox}>
+                <Text style={styles.summaryLabel}>EDGE-AI INTERPRETATION</Text>
+                <Text style={styles.summaryText} numberOfLines={3}>
+                  {item.aiSummary}
+                </Text>
+              </View>
+
+              <TouchableOpacity style={styles.viewButton}>
+                <Text style={styles.viewButtonText}>ENCRYPTED LOG DETAILS</Text>
+                <Ionicons name="chevron-forward" size={16} color={MEDICAL_RED} />
+              </TouchableOpacity>
+            </View>
+          ))
+        )}
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  // Added backButton styles
+  backButton: {
+    position: 'absolute',
+    top: 50, // Adjust based on your status bar height
+    right: 20,
+    zIndex: 10,
+    backgroundColor: '#FFF',
+    padding: 8,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    // Shadow to match cards
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5', // Light gray background to make white cards pop
+    backgroundColor: '#F5F5F5',
   },
   content: {
     padding: 16,
+    paddingTop: 60, // Added more top padding so the back button doesn't overlap header title
     paddingBottom: 40,
   },
   header: {
@@ -170,7 +198,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderWidth: 1,
     borderColor: '#E0E0E0',
-    // Soft professional shadow
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,

@@ -5,6 +5,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './screens/HomeScreen';
 import ResultScreen from './screens/ResultScreen';
 import HistoryScreen from './screens/HistoryScreen';
+import ProfileScreen from './screens/ProfileScreen';
+import ChatScreen from './screens/ChatScreen'; // ← Added ChatScreen import
 import { initDB } from './database/db';
 
 export type Vitals = {
@@ -27,6 +29,8 @@ export type RootStackParamList = {
     vitals: Vitals;
   };
   History: undefined;
+  Profile: undefined;
+  Chat: undefined; // ← Added Chat to the param list
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -44,31 +48,17 @@ export default function App() {
       <Stack.Navigator
         initialRouteName="Home"
         screenOptions={{
-          headerShadowVisible: false,
-          headerTitleStyle: {
-            fontSize: 20,
-            fontWeight: '700',
-          },
+          headerShown: false, // hides the default nav header globally
           contentStyle: {
             backgroundColor: '#F8F8F8',
           },
         }}
       >
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ title: 'Baymax Health Console' }}
-        />
-        <Stack.Screen
-          name="Result"
-          component={ResultScreen}
-          options={{ title: 'Assessment Report' }}
-        />
-        <Stack.Screen
-          name="History"
-          component={HistoryScreen}
-          options={{ title: 'Scan History' }}
-        />
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Result" component={ResultScreen} />
+        <Stack.Screen name="History" component={HistoryScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="Chat" component={ChatScreen} /> 
       </Stack.Navigator>
     </NavigationContainer>
   );
