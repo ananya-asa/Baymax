@@ -1,6 +1,4 @@
-
-
-import React, { useState, Suspense } from 'react';
+import React, { useState, Suspense, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -28,6 +26,11 @@ import {
 
 import { Asset } from 'expo-asset';
 import { COLORS } from '../theme/colors';
+
+/* =========================
+   WEBSOCKET CONFIG
+========================= */
+const WS_URL = 'ws://localhost:8765';
 
 /* =========================
    3D HEALTH MODEL
@@ -64,17 +67,13 @@ function HealthModel({
     baseStyle: any
   ) => [
     baseStyle,
-
     hoveredId === id && {
       borderColor: COLORS.primary,
       borderWidth: 2,
-
       transform: [{ scale: 1.08 }],
-
       shadowColor: COLORS.primary,
       shadowOpacity: 0.25,
       shadowRadius: 10,
-
       elevation: 10,
     },
   ];
@@ -95,38 +94,19 @@ function HealthModel({
         onPointerOver={() => setHoveredId('hr')}
         onPointerOut={() => setHoveredId(null)}
       >
-
         <Html distanceFactor={8} center>
           <Ionicons
             name="heart"
             size={24}
-            color={
-              hoveredId === 'hr'
-                ? '#FF0000'
-                : COLORS.primary
-            }
+            color={hoveredId === 'hr' ? '#FF0000' : COLORS.primary}
           />
         </Html>
 
-        <Html
-          distanceFactor={8}
-          position={[1.4, 0, 0]}
-          pointerEvents="auto"
-        >
+        <Html distanceFactor={8} position={[1.4, 0, 0]} pointerEvents="auto">
           <View style={styles.calloutWrapper}>
-
             <View style={styles.line} />
-
-            <View
-              style={getDynamicStyle(
-                'hr',
-                styles.floatingInputCard
-              )}
-            >
-              <Text style={styles.floatingLabel}>
-                HEART RATE
-              </Text>
-
+            <View style={getDynamicStyle('hr', styles.floatingInputCard)}>
+              <Text style={styles.floatingLabel}>HEART RATE</Text>
               <TextInput
                 value={heartRate}
                 onChangeText={setHeartRate}
@@ -145,29 +125,11 @@ function HealthModel({
         onPointerOver={() => setHoveredId('spo2')}
         onPointerOut={() => setHoveredId(null)}
       >
-        <Html
-          distanceFactor={8}
-          position={[-1.5, 0, 0]}
-          pointerEvents="auto"
-        >
-          <View
-            style={[
-              styles.calloutWrapper,
-              { flexDirection: 'row-reverse' },
-            ]}
-          >
+        <Html distanceFactor={8} position={[-1.5, 0, 0]} pointerEvents="auto">
+          <View style={[styles.calloutWrapper, { flexDirection: 'row-reverse' }]}>
             <View style={styles.line} />
-
-            <View
-              style={getDynamicStyle(
-                'spo2',
-                styles.floatingInputCard
-              )}
-            >
-              <Text style={styles.floatingLabel}>
-                SpO2 %
-              </Text>
-
+            <View style={getDynamicStyle('spo2', styles.floatingInputCard)}>
+              <Text style={styles.floatingLabel}>SpO2 %</Text>
               <TextInput
                 value={spo2}
                 onChangeText={setSpo2}
@@ -186,25 +148,11 @@ function HealthModel({
         onPointerOver={() => setHoveredId('temp')}
         onPointerOut={() => setHoveredId(null)}
       >
-        <Html
-          distanceFactor={8}
-          position={[1.5, 0.4, 0]}
-          pointerEvents="auto"
-        >
+        <Html distanceFactor={8} position={[1.5, 0.4, 0]} pointerEvents="auto">
           <View style={styles.calloutWrapper}>
-
             <View style={styles.line} />
-
-            <View
-              style={getDynamicStyle(
-                'temp',
-                styles.floatingInputCard
-              )}
-            >
-              <Text style={styles.floatingLabel}>
-                BODY TEMP
-              </Text>
-
+            <View style={getDynamicStyle('temp', styles.floatingInputCard)}>
+              <Text style={styles.floatingLabel}>BODY TEMP</Text>
               <TextInput
                 value={temp}
                 onChangeText={setTemp}
@@ -223,25 +171,11 @@ function HealthModel({
         onPointerOver={() => setHoveredId('bp')}
         onPointerOut={() => setHoveredId(null)}
       >
-        <Html
-          distanceFactor={8}
-          position={[1.3, -0.5, 0]}
-          pointerEvents="auto"
-        >
+        <Html distanceFactor={8} position={[1.3, -0.5, 0]} pointerEvents="auto">
           <View style={styles.calloutWrapper}>
-
             <View style={styles.line} />
-
-            <View
-              style={getDynamicStyle(
-                'bp',
-                styles.floatingInputCard
-              )}
-            >
-              <Text style={styles.floatingLabel}>
-                BP mmHg
-              </Text>
-
+            <View style={getDynamicStyle('bp', styles.floatingInputCard)}>
+              <Text style={styles.floatingLabel}>BP mmHg</Text>
               <TextInput
                 value={bp}
                 onChangeText={setBp}
@@ -260,23 +194,9 @@ function HealthModel({
         onPointerOut={() => setHoveredId(null)}
       >
         <Html distanceFactor={8} pointerEvents="auto">
-
-          <View
-            style={getDynamicStyle(
-              'smoke',
-              styles.envCard
-            )}
-          >
-            <MaterialCommunityIcons
-              name="smoke-detector"
-              size={24}
-              color={COLORS.primary}
-            />
-
-            <Text style={styles.envLabel}>
-              SMOKE LEVEL
-            </Text>
-
+          <View style={getDynamicStyle('smoke', styles.envCard)}>
+            <MaterialCommunityIcons name="smoke-detector" size={24} color={COLORS.primary} />
+            <Text style={styles.envLabel}>SMOKE LEVEL</Text>
             <TextInput
               value={smoke}
               onChangeText={setSmoke}
@@ -285,7 +205,6 @@ function HealthModel({
               keyboardType="numeric"
             />
           </View>
-
         </Html>
       </mesh>
 
@@ -296,23 +215,9 @@ function HealthModel({
         onPointerOut={() => setHoveredId(null)}
       >
         <Html distanceFactor={8} pointerEvents="auto">
-
-          <View
-            style={getDynamicStyle(
-              'humidity',
-              styles.envCard
-            )}
-          >
-            <Ionicons
-              name="water"
-              size={24}
-              color={COLORS.primary}
-            />
-
-            <Text style={styles.envLabel}>
-              HUMIDITY %
-            </Text>
-
+          <View style={getDynamicStyle('humidity', styles.envCard)}>
+            <Ionicons name="water" size={24} color={COLORS.primary} />
+            <Text style={styles.envLabel}>HUMIDITY %</Text>
             <TextInput
               value={humidity}
               onChangeText={setHumidity}
@@ -321,7 +226,6 @@ function HealthModel({
               keyboardType="numeric"
             />
           </View>
-
         </Html>
       </mesh>
 
@@ -332,23 +236,9 @@ function HealthModel({
         onPointerOut={() => setHoveredId(null)}
       >
         <Html distanceFactor={8} pointerEvents="auto">
-
-          <View
-            style={getDynamicStyle(
-              'room',
-              styles.envCard
-            )}
-          >
-            <Ionicons
-              name="thermometer"
-              size={24}
-              color={COLORS.primary}
-            />
-
-            <Text style={styles.envLabel}>
-              ROOM TEMP
-            </Text>
-
+          <View style={getDynamicStyle('room', styles.envCard)}>
+            <Ionicons name="thermometer" size={24} color={COLORS.primary} />
+            <Text style={styles.envLabel}>ROOM TEMP</Text>
             <TextInput
               value={roomTemp}
               onChangeText={setRoomTemp}
@@ -357,7 +247,6 @@ function HealthModel({
               keyboardType="numeric"
             />
           </View>
-
         </Html>
       </mesh>
 
@@ -373,26 +262,91 @@ export default function HomeScreen() {
 
   const navigation = useNavigation<any>();
 
-  const [heartRate, setHeartRate] =
-    useState('');
+  const [heartRate, setHeartRate] = useState('');
+  const [spo2, setSpo2] = useState('');
+  const [temperature, setTemperature] = useState('');
+  const [bloodPressure, setBloodPressure] = useState('');
+  const [smoke, setSmoke] = useState('');
+  const [roomTemp, setRoomTemp] = useState('');
+  const [humidity, setHumidity] = useState('');
 
-  const [spo2, setSpo2] =
-    useState('');
+  // WebSocket status
+  const [wsStatus, setWsStatus] = useState<'connecting' | 'connected' | 'disconnected'>('connecting');
+  const wsRef = useRef<WebSocket | null>(null);
 
-  const [temperature, setTemperature] =
-    useState('');
+  // --- WebSocket: auto-fill vitals from sensor ---
+  useEffect(() => {
+    const connect = () => {
+      try {
+        const ws = new WebSocket(WS_URL);
+        wsRef.current = ws;
 
-  const [bloodPressure, setBloodPressure] =
-    useState('');
+        ws.onopen = () => {
+          console.log('[WS] Connected to sensor bridge');
+          setWsStatus('connected');
+        };
 
-  const [smoke, setSmoke] =
-    useState('');
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            console.log('[WS] Sensor data:', data);
 
-  const [roomTemp, setRoomTemp] =
-    useState('');
+            // Auto-fill fields — only update if sensor value is non-zero
+            if (data.hr && data.hr > 0)
+              setHeartRate(String(data.hr));
 
-  const [humidity, setHumidity] =
-    useState('');
+            if (data.spo2 && data.spo2 > 0)
+              setSpo2(String(data.spo2));
+
+            if (data.bodyTemp && data.bodyTemp > 0)
+              setTemperature(String(data.bodyTemp));
+
+            if (data.bp_sys && data.bp_dia && data.bp_sys > 0)
+              setBloodPressure(`${data.bp_sys}/${data.bp_dia}`);
+
+            if (data.smoke !== undefined)
+              setSmoke(String(data.smoke));
+
+            if (data.humidity !== undefined)
+              setHumidity(String(data.humidity));
+
+            if (data.roomTemp !== undefined)
+              setRoomTemp(String(data.roomTemp));
+
+          } catch (e) {
+            console.error('[WS] Parse error:', e);
+          }
+        };
+
+        ws.onerror = (e) => {
+          console.error('[WS] Error:', e);
+          setWsStatus('disconnected');
+        };
+
+        ws.onclose = () => {
+          console.log('[WS] Disconnected — retrying in 3s...');
+          setWsStatus('disconnected');
+          // Auto-reconnect after 3 seconds
+          setTimeout(connect, 3000);
+        };
+
+      } catch (e) {
+        console.error('[WS] Connection failed:', e);
+        setWsStatus('disconnected');
+        setTimeout(connect, 3000);
+      }
+    };
+
+    connect();
+
+    // Cleanup on unmount
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.onclose = null; // prevent auto-reconnect on unmount
+        wsRef.current.close();
+      }
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -400,56 +354,44 @@ export default function HomeScreen() {
       {/* HEADER */}
       <View style={styles.header}>
 
-        {/* LEFT */}
         <View style={styles.headerLeft}>
-
           <TouchableOpacity
             style={styles.backBtn}
-            onPress={() =>
-              navigation.navigate('Dashboard')
-            }
+            onPress={() => navigation.navigate('Dashboard')}
             activeOpacity={0.8}
           >
-            <Ionicons
-              name="arrow-back"
-              size={22}
-              color={COLORS.primary}
-            />
+            <Ionicons name="arrow-back" size={22} color={COLORS.primary} />
           </TouchableOpacity>
-
-          <Text style={styles.title}>
-            HEALTH CONSOLE
-          </Text>
-
+          <Text style={styles.title}>HEALTH CONSOLE</Text>
         </View>
 
-        {/* RIGHT */}
         <View style={styles.headerIcons}>
+
+          {/* WS Status dot */}
+          <View style={styles.wsStatusBadge}>
+            <View style={[
+              styles.wsDot,
+              wsStatus === 'connected' && styles.wsDotConnected,
+              wsStatus === 'disconnected' && styles.wsDotDisconnected,
+              wsStatus === 'connecting' && styles.wsDotConnecting,
+            ]} />
+            <Text style={styles.wsStatusText}>
+              {wsStatus === 'connected' ? 'LIVE' : wsStatus === 'connecting' ? 'CONNECTING' : 'OFFLINE'}
+            </Text>
+          </View>
 
           <TouchableOpacity
             style={styles.iconBtn}
-            onPress={() =>
-              navigation.navigate('History')
-            }
+            onPress={() => navigation.navigate('History')}
           >
-            <Ionicons
-              name="time-outline"
-              size={22}
-              color={COLORS.primary}
-            />
+            <Ionicons name="time-outline" size={22} color={COLORS.primary} />
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.iconBtn}
-            onPress={() =>
-              navigation.navigate('Profile')
-            }
+            onPress={() => navigation.navigate('Profile')}
           >
-            <Ionicons
-              name="person-outline"
-              size={22}
-              color={COLORS.primary}
-            />
+            <Ionicons name="person-outline" size={22} color={COLORS.primary} />
           </TouchableOpacity>
 
         </View>
@@ -457,82 +399,49 @@ export default function HomeScreen() {
 
       {/* 3D CANVAS */}
       <View style={styles.canvasContainer}>
-
-        <Canvas
-          camera={{
-            position: [0, 0, 7],
-            fov: 45,
-          }}
-        >
+        <Canvas camera={{ position: [0, 0, 7], fov: 45 }}>
           <Suspense
             fallback={
               <Html center>
-                <ActivityIndicator
-                  color={COLORS.primary}
-                />
+                <ActivityIndicator color={COLORS.primary} />
               </Html>
             }
           >
-
-            <Stage
-              environment="city"
-              intensity={0.5}
-            >
+            <Stage environment="city" intensity={0.5}>
               <HealthModel
                 heartRate={heartRate}
                 setHeartRate={setHeartRate}
-
                 spo2={spo2}
                 setSpo2={setSpo2}
-
                 temp={temperature}
                 setTemp={setTemperature}
-
                 bp={bloodPressure}
                 setBp={setBloodPressure}
-
                 smoke={smoke}
                 setSmoke={setSmoke}
-
                 roomTemp={roomTemp}
                 setRoomTemp={setRoomTemp}
-
                 humidity={humidity}
                 setHumidity={setHumidity}
               />
             </Stage>
-
           </Suspense>
 
-          <OrbitControls
-            enableZoom={false}
-            enableRotate={false}
-            makeDefault
-          />
+          <OrbitControls enableZoom={false} enableRotate={false} makeDefault />
         </Canvas>
-
       </View>
 
       {/* FOOTER */}
       <View style={styles.footer}>
-
         <TouchableOpacity
           style={styles.primaryButton}
           onPress={() =>
             navigation.navigate('Result', {
               vitals: {
-                heartRate:
-                  heartRate || '72',
-
-                spo2:
-                  spo2 || '98',
-
-                temperature:
-                  temperature || '36.6',
-
-                bloodPressure:
-                  bloodPressure || '120/80',
-
+                heartRate: heartRate || '72',
+                spo2: spo2 || '98',
+                temperature: temperature || '36.6',
+                bloodPressure: bloodPressure || '120/80',
                 smoke,
                 roomTemp,
                 humidity,
@@ -540,27 +449,17 @@ export default function HomeScreen() {
             })
           }
         >
-          <Text style={styles.buttonText}>
-            Generate Report
-          </Text>
+          <Text style={styles.buttonText}>Generate Report</Text>
         </TouchableOpacity>
-
       </View>
 
       {/* CHAT FAB */}
       <TouchableOpacity
         style={styles.fabButton}
-        onPress={() =>
-          navigation.navigate('Chat')
-        }
+        onPress={() => navigation.navigate('Chat')}
         activeOpacity={0.8}
       >
-        <MaterialCommunityIcons
-          name="robot"
-          size={28}
-          color="#FFF"
-        />
-
+        <MaterialCommunityIcons name="robot" size={28} color="#FFF" />
         <View style={styles.onlineBadge} />
       </TouchableOpacity>
 
@@ -579,11 +478,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
 
-  /* HEADER */
   header: {
     padding: 24,
     paddingTop: 56,
-
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -599,21 +496,13 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 14,
-
     backgroundColor: COLORS.primarySoft,
-
     justifyContent: 'center',
     alignItems: 'center',
-
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.06,
     shadowRadius: 6,
-
     elevation: 3,
   },
 
@@ -629,42 +518,63 @@ const styles = StyleSheet.create({
     gap: 10,
   },
 
+  // WebSocket status badge
+  wsStatusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20,
+    gap: 5,
+  },
+  wsDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#999',
+  },
+  wsDotConnected: {
+    backgroundColor: '#4CAF50',
+  },
+  wsDotDisconnected: {
+    backgroundColor: '#F44336',
+  },
+  wsDotConnecting: {
+    backgroundColor: '#FF9800',
+  },
+  wsStatusText: {
+    fontSize: 9,
+    fontWeight: '900',
+    color: '#555',
+    letterSpacing: 0.5,
+  },
+
   iconBtn: {
     width: 44,
     height: 44,
     borderRadius: 13,
-
     backgroundColor: COLORS.primarySoft,
-
     justifyContent: 'center',
     alignItems: 'center',
   },
 
-  /* CANVAS */
   canvasContainer: {
     flex: 1,
-    minHeight:
-      Platform.OS === 'web'
-        ? 600
-        : undefined,
+    minHeight: Platform.OS === 'web' ? 600 : undefined,
   },
 
-  /* FOOTER */
   footer: {
     padding: 24,
-
     position: 'absolute',
     bottom: 0,
-
     width: '100%',
   },
 
   primaryButton: {
     backgroundColor: COLORS.primary,
-
     padding: 20,
     borderRadius: 20,
-
     alignItems: 'center',
   },
 
@@ -674,122 +584,88 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 
-  /* FAB */
   fabButton: {
     position: 'absolute',
-
     bottom: 105,
     right: 24,
-
     width: 64,
     height: 64,
     borderRadius: 32,
-
     backgroundColor: COLORS.primary,
-
     justifyContent: 'center',
     alignItems: 'center',
-
     elevation: 8,
-
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
   },
 
   onlineBadge: {
     position: 'absolute',
-
     top: 2,
     right: 4,
-
     width: 14,
     height: 14,
     borderRadius: 7,
-
     backgroundColor: '#4CAF50',
-
     borderWidth: 2,
     borderColor: '#FFF',
   },
 
-  /* CALLOUTS */
   calloutWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-
     width: 220,
   },
 
   line: {
     width: 50,
     height: 2,
-
     backgroundColor: '#FF0000',
   },
 
   floatingInputCard: {
     backgroundColor: '#FFF',
-
     padding: 12,
     borderRadius: 16,
-
     borderWidth: 1,
     borderColor: COLORS.border,
-
     width: 120,
   },
 
   floatingLabel: {
     fontSize: 9,
     fontWeight: '800',
-
     color: COLORS.subtext,
-
     marginBottom: 4,
   },
 
   floatingInput: {
     fontSize: 18,
     fontWeight: '800',
-
     color: COLORS.text,
-
     padding: 0,
   },
 
-  /* ENVIRONMENT CARDS */
   envCard: {
     backgroundColor: '#FFF',
-
     padding: 16,
     borderRadius: 20,
-
     borderWidth: 1,
     borderColor: COLORS.border,
-
     width: 130,
-
     alignItems: 'center',
-
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowRadius: 10,
-
     elevation: 2,
   },
 
   envLabel: {
     fontSize: 10,
     fontWeight: '800',
-
     color: COLORS.subtext,
-
     marginTop: 8,
     marginBottom: 4,
   },
@@ -797,9 +673,7 @@ const styles = StyleSheet.create({
   envInput: {
     fontSize: 20,
     fontWeight: '800',
-
     color: COLORS.text,
-
     textAlign: 'center',
     width: '100%',
   },

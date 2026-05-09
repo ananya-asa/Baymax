@@ -2,12 +2,13 @@ import React, { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import DashboardScreen from './screens/DashboardScreen'; // ← Added
+import DashboardScreen from './screens/DashboardScreen';
 import HomeScreen from './screens/HomeScreen';
 import ResultScreen from './screens/ResultScreen';
 import HistoryScreen from './screens/HistoryScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ChatScreen from './screens/ChatScreen';
+import BaymaxVoiceChat from './screens/Baymaxvoicechat';
 import { initDB } from './database/db';
 
 export type Vitals = {
@@ -25,11 +26,10 @@ export type AnalysisItem = {
 };
 
 export type RootStackParamList = {
-  Dashboard: undefined; // ← Added
+  Dashboard: undefined;
+  VoiceChat: undefined;  // ← added
   Home: undefined;
-  Result: {
-    vitals: Vitals;
-  };
+  Result: { vitals: Vitals };
   History: undefined;
   Profile: undefined;
   Chat: undefined;
@@ -48,7 +48,7 @@ export default function App() {
     <NavigationContainer>
       <StatusBar style="dark" />
       <Stack.Navigator
-        initialRouteName="Dashboard" // ← App now opens on Dashboard
+        initialRouteName="Dashboard"
         screenOptions={{
           headerShown: false,
           contentStyle: {
@@ -57,6 +57,7 @@ export default function App() {
         }}
       >
         <Stack.Screen name="Dashboard" component={DashboardScreen} />
+        <Stack.Screen name="VoiceChat" component={BaymaxVoiceChat} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Result" component={ResultScreen} />
         <Stack.Screen name="History" component={HistoryScreen} />

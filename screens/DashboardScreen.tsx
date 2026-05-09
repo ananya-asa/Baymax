@@ -199,6 +199,7 @@ export default function DashboardScreen() {
 
           <View style={styles.btnStack}>
 
+            {/* START HEALTH SCAN */}
             <Animated.View
               style={{
                 transform: [
@@ -206,64 +207,72 @@ export default function DashboardScreen() {
                 ],
               }}
             >
-
               <TouchableOpacity
                 style={styles.primaryBtn}
                 onPress={() =>
                   navigation.navigate('Home')
                 }
               >
-
                 <Ionicons
                   name="pulse"
                   size={18}
                   color="#FFF"
                 />
-
                 <Text style={styles.primaryBtnText}>
                   Start Health Scan
                 </Text>
-
               </TouchableOpacity>
-
             </Animated.View>
 
+            {/* START ANALYSIS */}
             <TouchableOpacity
               style={styles.outlineBtn}
               onPress={() =>
                 navigation.navigate('Home')
               }
             >
-
               <Ionicons
                 name="stats-chart"
                 size={16}
                 color={COLORS.primary}
               />
-
               <Text style={styles.outlineBtnText}>
                 Start Analysis
               </Text>
-
             </TouchableOpacity>
 
+            {/* TALK WITH BAYMAX ← NEW */}
+            <TouchableOpacity
+              style={styles.talkBtn}
+              onPress={() =>
+                navigation.navigate('VoiceChat')
+              }
+            >
+              <Ionicons
+                name="mic"
+                size={16}
+                color="#FFF"
+              />
+              <Text style={styles.talkBtnText}>
+                Talk with Baymax
+              </Text>
+            </TouchableOpacity>
+
+            {/* VIEW PAST REPORTS */}
             <TouchableOpacity
               style={styles.ghostBtn}
               onPress={() =>
                 navigation.navigate('History')
               }
             >
-
               <Ionicons
                 name="time-outline"
                 size={15}
                 color={COLORS.subtext}
               />
-
               <Text style={styles.ghostBtnText}>
                 View past reports
               </Text>
-
             </TouchableOpacity>
 
           </View>
@@ -283,17 +292,12 @@ export default function DashboardScreen() {
               isLooping
               shouldPlay
               useNativeControls={false}
-
               onPlaybackStatusUpdate={(
                 s: AVPlaybackStatus
               ) => {
-
                 if (s.isLoaded) {
-                  setIsPlaying(
-                    s.isPlaying
-                  );
+                  setIsPlaying(s.isPlaying);
                 }
-
               }}
             />
 
@@ -306,34 +310,22 @@ export default function DashboardScreen() {
               style={styles.ctrl}
               onPress={togglePlay}
             >
-
               <Ionicons
-                name={
-                  isPlaying
-                    ? 'pause'
-                    : 'play'
-                }
+                name={isPlaying ? 'pause' : 'play'}
                 size={18}
                 color="#FFF"
               />
-
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.ctrl}
               onPress={toggleMute}
             >
-
               <Ionicons
-                name={
-                  isMuted
-                    ? 'volume-mute'
-                    : 'volume-high'
-                }
+                name={isMuted ? 'volume-mute' : 'volume-high'}
                 size={18}
                 color="#FFF"
               />
-
             </TouchableOpacity>
 
           </View>
@@ -366,11 +358,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -80,
     left: -80,
-
     width: 240,
     height: 240,
     borderRadius: 120,
-
     backgroundColor: COLORS.primary,
     opacity: 0.06,
   },
@@ -379,11 +369,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: -60,
     right: -60,
-
     width: 200,
     height: 200,
     borderRadius: 100,
-
     backgroundColor: COLORS.primary,
     opacity: 0.06,
   },
@@ -393,16 +381,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-
     paddingHorizontal: 32,
-
-    paddingTop:
-      Platform.OS === 'ios'
-        ? 54
-        : 20,
-
+    paddingTop: Platform.OS === 'ios' ? 54 : 20,
     paddingBottom: 10,
-
     zIndex: 10,
   },
 
@@ -416,9 +397,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 9,
-
     backgroundColor: COLORS.primary,
-
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -426,7 +405,6 @@ const styles = StyleSheet.create({
   logoText: {
     fontSize: 17,
     fontWeight: '900',
-
     color: COLORS.text,
     letterSpacing: 2,
   },
@@ -435,15 +413,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
-
     paddingHorizontal: 14,
     paddingVertical: 7,
-
     borderRadius: 20,
-
     borderWidth: 1.5,
     borderColor: COLORS.border,
-
     backgroundColor: '#FFF',
   },
 
@@ -457,10 +431,8 @@ const styles = StyleSheet.create({
   hero: {
     flex: 1,
     flexDirection: 'row',
-
     alignItems: 'center',
     justifyContent: 'space-between',
-
     paddingLeft: 90,
     paddingRight: 40,
   },
@@ -469,25 +441,20 @@ const styles = StyleSheet.create({
   left: {
     width: W * 0.46,
     maxWidth: 420,
-
     zIndex: 5,
   },
 
   hello: {
     fontSize: 18,
     fontWeight: '400',
-
     color: COLORS.subtext,
-
     marginBottom: 6,
   },
 
   name: {
     fontSize: 58,
     fontWeight: '900',
-
     color: COLORS.text,
-
     lineHeight: 62,
     marginBottom: 14,
   },
@@ -499,9 +466,7 @@ const styles = StyleSheet.create({
   sub: {
     fontSize: 21,
     fontWeight: '600',
-
     color: COLORS.subtext,
-
     lineHeight: 32,
     marginBottom: 34,
   },
@@ -514,28 +479,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-
     gap: 8,
-
     backgroundColor: COLORS.primary,
-
     paddingVertical: 16,
     paddingHorizontal: 28,
-
     minWidth: 230,
-
     borderRadius: 18,
-
     shadowColor: COLORS.primary,
-
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.35,
     shadowRadius: 12,
-
     elevation: 6,
   },
 
@@ -549,19 +502,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-
     gap: 7,
-
     borderWidth: 2,
     borderColor: COLORS.primary,
-
     backgroundColor: COLORS.primarySoft,
-
     paddingVertical: 14,
     paddingHorizontal: 24,
-
     minWidth: 230,
-
     borderRadius: 18,
   },
 
@@ -571,10 +518,33 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
 
+  // ← NEW: Talk with Baymax button
+  talkBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#1A1A1A',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    minWidth: 230,
+    borderRadius: 18,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+
+  talkBtnText: {
+    color: '#FFF',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+
   ghostBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-
     gap: 6,
     paddingVertical: 4,
   },
@@ -582,9 +552,7 @@ const styles = StyleSheet.create({
   ghostBtnText: {
     fontSize: 13,
     fontWeight: '600',
-
     color: COLORS.subtext,
-
     textDecorationLine: 'underline',
   },
 
@@ -597,13 +565,10 @@ const styles = StyleSheet.create({
 
   videoContainer: {
     position: 'absolute',
-
     width: W,
     height: H,
-
     right: -340,
     top: -340,
-
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -616,13 +581,10 @@ const styles = StyleSheet.create({
   /* CONTROLS */
   controls: {
     position: 'absolute',
-
     bottom: 50,
     right: 40,
-
     flexDirection: 'row',
     gap: 8,
-
     zIndex: 20,
   },
 
@@ -630,9 +592,7 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-
     backgroundColor: 'rgba(0,0,0,0.45)',
-
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -641,13 +601,10 @@ const styles = StyleSheet.create({
   caption: {
     position: 'absolute',
     bottom: 12,
-
     fontSize: 12,
     fontWeight: '500',
-
     color: COLORS.subtext,
     fontStyle: 'italic',
-
     zIndex: 20,
   },
 
