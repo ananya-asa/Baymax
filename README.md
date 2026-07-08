@@ -1,8 +1,5 @@
 # 🤖 Baymax – AI-Powered Personal Health Assistant
 
-<p align="center">
-  <img src="assets/logo.png" width="170" alt="Baymax Logo">
-</p>
 
 <h3 align="center">
 Your Intelligent Healthcare Companion Inspired by Baymax
